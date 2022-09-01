@@ -7,6 +7,8 @@ node ./src/server.js
 open http://localhost:4000/
 then paste bellow queries.
 
+# use query
+
 ```
 query {
   feed{
@@ -15,5 +17,17 @@ query {
     url
   },
   info
+}
+```
+
+
+# use mutation
+```
+mutation{
+  post(url:"https://yahoo.co.jp",description:"yahoo"){
+    id
+    description
+    url
+  } 
 }
 ```

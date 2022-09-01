@@ -1,5 +1,7 @@
 const { ApolloServer, gql} = require("apollo-server");
 
+const fs = require("fs");
+const path = require("path");
 
 // HeackerNews each one
 let links = [
@@ -19,19 +21,8 @@ let links = [
         url: "sumito.jp",
     },
 ]
-// define GraphQL schema 
-const typeDefs = gql`
-    type Query {
-        info: String!
-        feed: [Link]!
-    }
 
-    type Link{
-        id: ID!
-        description: String!
-        url: String!
-    }
-`;
+
 
 // resolver
 const resolvers = {
@@ -39,11 +30,26 @@ const resolvers = {
         info: () => "Hackernews clone",
         feed: () => links,
     },
+
+    Mutation: {
+        post: (parent, args) => {
+            let idCount = links.length;
+            
+            const link = {
+                id: `link-${idCount++}`,
+                description: args.description,
+                url: args.url,
+            };
+
+            links.push(link);
+            return link;
+        }
+    }
 };
 
 const server = new ApolloServer({
-    typeDefs,
-    resolvers
+    typeDefs: fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf-8"),
+    resolvers,
 });
 
 server.listen().then(({url}) => console.log(`now listening ${url}`));
