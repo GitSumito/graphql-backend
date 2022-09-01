@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 async function main(){
     const newLink = await prisma.link.create({
         data: {
-            description: "hoge0",
+            description: "hogehogehoge",
             url: "sumito.jp",
         },
     });

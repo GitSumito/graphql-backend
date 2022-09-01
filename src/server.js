@@ -3,46 +3,28 @@ const { ApolloServer, gql} = require("apollo-server");
 const fs = require("fs");
 const path = require("path");
 
-// HeackerNews each one
-let links = [
-    {
-        id: "link-0",
-        description: "hoge0",
-        url: "sumito.jp",
-    },
-    {
-        id: "link-1",
-        description: "hoge1",
-        url: "sumito.jp",
-    },
-    {
-        id: "link-2",
-        description: "hoge2",
-        url: "sumito.jp",
-    },
-]
-
+const {PrismaClient, Prisma} = require("@prisma/client");
+const prisma = new PrismaClient();
 
 
 // resolver
 const resolvers = {
     Query: {
         info: () => "Hackernews clone",
-        feed: () => links,
+        feed: async (parent, args, context) => {
+            return context.prisma.link.findMany();
+        },
     },
 
     Mutation: {
-        post: (parent, args) => {
-            let idCount = links.length;
-            
-            const link = {
-                id: `link-${idCount++}`,
-                description: args.description,
-                url: args.url,
-            };
-
-            links.push(link);
-            return link;
+        post: (parent, args, context ) => {
+            const newLink = context.prisma.link.create({
+                data: {
+                    url: args.url,
+                    description: args.description,
+                },
+            });
+            return newLink
         }
     }
 };
@@ -50,6 +32,9 @@ const resolvers = {
 const server = new ApolloServer({
     typeDefs: fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf-8"),
     resolvers,
+    context: {
+        prisma,
+    },
 });
 
 server.listen().then(({url}) => console.log(`now listening ${url}`));

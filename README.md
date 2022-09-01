@@ -36,8 +36,8 @@ mutation{
 install
 ```
 npm install prisma --save-dev
-
 npm install @prisma/client
+
 ```
 
 
@@ -45,3 +45,6 @@ try
 ```
 npx prisma init
 npx prisma migrate dev
+npx prisma generate
+npx prisma studio
+```
